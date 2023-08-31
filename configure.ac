@@ -68,7 +68,7 @@ case "$host" in
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(OSNAME,windows)
-		AC_SUBST(SONAME,udjatusers.dll)
+		AC_SUBST(SONAME,usession.dll)
 		AC_CONFIG_FILES(src/os/windows/resources.rc)
 		;;
 

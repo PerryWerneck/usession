@@ -35,6 +35,7 @@
 	private:
 		string sid;					///< @brief LoginD session ID.
 		string username;			///< @brief Username.
+		string dbpath;
 		uid_t uid = (uid_t) -1;		///< @brief Session user id.
 
 		/// @brief Call logind method, convert result to std::string
@@ -169,6 +170,76 @@
 		}
 
 		std::string path() const override {
+
+			if(!dbpath.empty()) {
+				return dbpath;
+			}
+
+			sd_bus* bus = NULL;
+			int rc;
+
+			rc = sd_bus_open_system(&bus);
+			if(rc < 0) {
+
+				throw system_error(-rc,system_category());
+			}
+
+			sd_bus_error error = SD_BUS_ERROR_NULL;
+			sd_bus_message *reply = NULL;
+
+			try {
+
+				rc = sd_bus_call_method(
+								bus,
+								"org.freedesktop.login1",
+								"/org/freedesktop/login1",
+								"org.freedesktop.login1.Manager",
+								"GetSession",
+								&error,
+								&reply,
+								"s", sid.c_str()
+							);
+
+				if(rc < 0) {
+					string message{error.message};
+					sd_bus_error_free(&error);
+					throw system_error(-rc,system_category(),"org.freedesktop.login1.Manager.GetSession");
+				} else if(!reply) {
+					throw runtime_error("No reply from org.freedesktop.login1.Manager.GetSession");
+				}
+
+				const char *path = NULL;
+				rc = sd_bus_message_read_basic(reply,SD_BUS_TYPE_OBJECT_PATH,&path);
+				if(rc < 0) {
+					sd_bus_message_unref(reply);
+					throw system_error(-rc,system_category(),"org.freedesktop.login1.Manager.GetSession");
+
+				}
+
+				if(!(path && *path)) {
+					sd_bus_message_unref(reply);
+					throw runtime_error("Empty response from org.freedesktop.login1.Manager.GetSession");
+				}
+
+				const_cast<LoginDSession *>(this)->dbpath = path;
+
+				sd_bus_message_unref(reply);
+
+				User::Session *session = const_cast<User::Session *>(this);
+				if(session) {
+					session->dbpath = response;
+				}
+
+			} catch(...) {
+
+				sd_bus_unref(bus);
+				throw;
+
+			}
+
+			sd_bus_unref(bus);
+			return dbpath;
+
 		}
 
 		std::string getenv(const char *varname) const override {
