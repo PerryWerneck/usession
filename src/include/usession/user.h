@@ -26,6 +26,8 @@
  #include <usession/defs.h>
  #include <memory>
  #include <string>
+ #include <functional>
+ #include <iostream>
 
  namespace User {
 
@@ -47,7 +49,7 @@
 		virtual ~Session();
 
 		/// @brief Get session by user name.
-		std::shared_ptr<Session> factory(const char *username);
+		static std::shared_ptr<Session> factory(const char *username);
 
 		/// @brief Get username
 		virtual const char * name(bool refresh = false) const;
@@ -62,7 +64,7 @@
 		virtual bool locked() const = 0;
 
 		/// @brief Is this session active?
-		virtual bool active() const noexcept = 0;
+		virtual bool active() const = 0;
 
 		/// @brief Is this a 'system' session?
 		virtual bool system() const = 0;
@@ -97,11 +99,11 @@
 
  namespace std {
 
-	inline const string to_string(const Udjat::User::Session &session) noexcept {
-		return session.to_string();
+	inline const char * to_string(const User::Session &session) noexcept {
+		return session.name();
 	}
 
-	inline const string to_string(std::shared_ptr<User::Session> session) noexcept {
+	inline const char * to_string(std::shared_ptr<User::Session> session) noexcept {
 		return session->name();
 	}
 
@@ -113,7 +115,7 @@
 		return os << session->name();
 	}
 
-	UDJAT_API const char * to_string(const User::State state) noexcept;
+	USESSION_API const char * to_string(const User::State state) noexcept;
 
 	inline ostream& operator<< (std::ostream& os, const User::State state) {
 		return os << to_string(state);

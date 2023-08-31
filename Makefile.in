@@ -76,7 +76,6 @@ BINRLS=$(BINDIR)/Release
 
 CFLAGS= \
 	@CXXFLAGS@ \
-	@PYTHON_CFLAGS@ \
 	-DHAVE_CONFIG_H=1 \
 	-fPIC \
 	-Isrc/include \
@@ -351,7 +350,7 @@ uninstall-devel:
 #---[ Debug Targets ]--------------------------------------------------------------------
 
 Debug: \
-	$(foreach TARGET, $(BUILD_TARGETS), $(BINDBG)/$(TARGET))
+	$(BINDBG)/@SONAME@
 	
 $(BINDBG)/$(PACKAGE_NAME)@EXEEXT@: \
 	$(foreach SRC, $(basename $(APPLICATION_SOURCES)), $(OBJDBG)/$(SRC).o) \

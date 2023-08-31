@@ -23,9 +23,13 @@
 
  #include <private/defs.h>
  #include <usession/user.h>
+ #include <unistd.h>
  #include <string>
  #include <memory>
  #include <systemd/sd-login.h>
+ #include <sys/types.h>
+ #include <pwd.h>
+ #include <systemd/sd-bus.h>
 
  using namespace std;
 
@@ -40,7 +44,7 @@
 
 		/// @brief Call logind method, convert result to std::string
 		/// @return Return from logind, empty if failed or invalid.
-		string get(int (*callback)(const char *, const char **)) {
+		string get(int (*callback)(const char *, char **)) const {
 
 			if(sid.empty()) {
 				return "";
@@ -94,7 +98,7 @@
 					// Get user id
 					if(sd_session_get_uid(sid.c_str(), &session->uid)) {
 						session->uid = -1;
-						return string{"@"} + sid;
+						return sid.c_str();
 					}
 
 				}
@@ -119,7 +123,7 @@
 
 			}
 
-			return username;
+			return username.c_str();
 
 		}
 
@@ -225,11 +229,6 @@
 
 				sd_bus_message_unref(reply);
 
-				User::Session *session = const_cast<User::Session *>(this);
-				if(session) {
-					session->dbpath = response;
-				}
-
 			} catch(...) {
 
 				sd_bus_unref(bus);
@@ -248,10 +247,10 @@
 		void call(const std::function<void()> exec) const override {
 		}
 
-	}
+	};
 
 	std::shared_ptr<Session> Session::factory(const char *username) {
-		return make_shared<SystemDSession>(username);
+		return make_shared<LoginDSession>(username);
 	}
 
  }
