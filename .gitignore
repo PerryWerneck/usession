@@ -30,3 +30,30 @@
 *.exe
 *.out
 *.app
+
+# Codeblocks
+*.bak
+*.layout
+.bin
+*.depend
+
+# Misc
+*~
+*.pc
+ABOUT-NLS
+*.m4
+*.cache
+*.log
+*.status
+configure
+intl
+m4
+po
+scripts
+stamp-h1
+Makefile
+config.h
+*.[0-9]
+resources.rc
+app-manifest.xml
+libtool
