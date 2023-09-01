@@ -133,6 +133,18 @@
 	return rc > 0;
  }
 
+ /// @brief Lock session.
+ void User::LoginDSession::lock() const {
+ }
+
+ /// @brief Unlock session.
+ void User::LoginDSession::unlock() const {
+
+ 	// References:
+ 	//	https://gitlab.gnome.org/GNOME/gdm/-/blob/main/daemon/gdm-manager.c#L297-327
+
+ }
+
  bool User::LoginDSession::locked() const {
  }
 

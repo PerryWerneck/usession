@@ -60,6 +60,12 @@
 		/// @brief Is this session a remote one?
 		virtual bool remote() const = 0;
 
+		/// @brief Lock session.
+		virtual void lock() const = 0;
+
+		/// @brief Unlock session.
+		virtual void unlock() const = 0;
+
 		/// @brief Is this session locked?
 		virtual bool locked() const = 0;
 

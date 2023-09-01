@@ -55,6 +55,10 @@
 
 		State state() const override;
 
+		void lock() const override;
+
+		void unlock() const override;
+
 		bool remote() const override;
 
 		bool locked() const override;
